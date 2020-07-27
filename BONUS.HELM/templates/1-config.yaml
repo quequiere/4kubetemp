@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: presta-config
+  namespace: prestans
+data:
+  PRESTASHOP_FIRST_NAME: {{ .Values.config.adminfirstname }}
+  PRESTASHOP_LAST_NAME: {{ .Values.config.adminlastname }}

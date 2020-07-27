@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prestashop
+  namespace: prestans
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prestashop
+  template:
+    metadata:
+      labels:
+        app: prestashop
+    spec:
+      containers:
+      - name: prestashop-app
+        image: bitnami/prestashop:1.7
+        ports:
+        - name: http
+          containerPort: 80
+        - name: https
+          containerPort: 443
+        env:
+          - name : PRESTASHOP_HOST
+            value: {{ .Values.config.publicip }}
+            
+          - name: MARIADB_HOST
+            value: "mariasql-svc"
+            
+          - name: PRESTASHOP_FIRST_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: presta-config
+                key: PRESTASHOP_FIRST_NAME
+          - name: PRESTASHOP_LAST_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: presta-config
+                key: PRESTASHOP_LAST_NAME  
+                
+                
+          - name: PRESTASHOP_EMAIL
+            valueFrom:
+              secretKeyRef:
+                name: presta-secret
+                key: PRESTASHOP_EMAIL
+          - name: PRESTASHOP_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: presta-secret
+                key: PRESTASHOP_PASSWORD
+              
+            
+          - name: PRESTASHOP_DATABASE_USER
+            valueFrom:
+              secretKeyRef:
+                name: presta-secret
+                key: PRESTASHOP_DATABASE_USER
+          - name: PRESTASHOP_DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: presta-secret
+                key: PRESTASHOP_DATABASE_PASSWORD
+          - name: PRESTASHOP_DATABASE_NAME
+            valueFrom:
+              secretKeyRef:
+                name: presta-secret
+                key: PRESTASHOP_DATABASE_NAME

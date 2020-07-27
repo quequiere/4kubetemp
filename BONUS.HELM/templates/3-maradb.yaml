@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mariadb
+  namespace: prestans
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      containers:
+      - name: mariadb
+        image: bitnami/mariadb:10.1
+        env:
+          - name: MARIADB_USER
+            valueFrom:
+              secretKeyRef:
+                name: presta-secret
+                key: PRESTASHOP_DATABASE_USER
+          - name: MARIADB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: presta-secret
+                key: PRESTASHOP_DATABASE_PASSWORD
+          - name: MARIADB_DATABASE
+            valueFrom:
+              secretKeyRef:
+                name: presta-secret
+                key: PRESTASHOP_DATABASE_NAME
+                
+          - name: MARIADB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: presta-secret
+                key: MARIA_ROOT_PWD
+                
+        volumeMounts:
+        - name: mysqlstorage
+          mountPath: /bitnami/mariadb
+      volumes:
+      - name: mysqlstorage
+        persistentVolumeClaim:
+          claimName: mariapvc
